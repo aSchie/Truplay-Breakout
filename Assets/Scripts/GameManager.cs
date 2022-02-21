@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float brickYOffset;
     private Vector2 brickPrefabScale;
     private int brickCount;
+    [SerializeField] private int numberOfBrickRows;
 
     public delegate void PlayerLives(int num);
     public static event PlayerLives NumberOfPlayerLives;
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
 
         Vector2 screenBounds = GetScreenBoundsInWorldCoords();
 
-        int howManyBricksPerRow = HowManyBricksPerRow(screenBounds.x * 2);
+        int howManyBricksPerRow = HowManyBricksPerRow();
 
         float newPrefabWidth = (screenBounds.x * 2) / howManyBricksPerRow;
         float newPrefabHeight = brickPrefabScale.y / (brickPrefabScale.x / newPrefabWidth);
@@ -133,7 +134,8 @@ public class GameManager : MonoBehaviour
             brickPosition.x = (-screenBounds.x + (newPrefabWidth / 2) + (newPrefabWidth * (i - (howManyBricksPerRow * numberOfRowsCompleted))));
             brickPosition.y = (screenBounds.y * brickYOffset) + (newPrefabHeight * numberOfRowsCompleted);
 
-            CreateBrick(brickPosition, i - (numberInCurrentRow + ((howManyBricksPerRow - 1) * numberOfRowsCompleted)));
+            int colorIndex = (i - (numberInCurrentRow + ((howManyBricksPerRow - 1) * numberOfRowsCompleted))) % brickColors.Length;
+            CreateBrick(brickPosition, colorIndex);
 
             numberInCurrentRow++;
 
@@ -152,22 +154,18 @@ public class GameManager : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.nearClipPlane));
     }
 
-    private int HowManyBricksPerRow(float screenBoundsInWorldWidth )
+    private int HowManyBricksPerRow()
     {
         float totalWidthOfBricks = brickCount * brickPrefabScale.x;
-        int howManyRowsTotal = (int)(totalWidthOfBricks / screenBoundsInWorldWidth);
 
-        howManyRowsTotal = howManyRowsTotal == 0 ? 1 : howManyRowsTotal;
-
-        return (int)(totalWidthOfBricks / howManyRowsTotal);
+        return (int)(totalWidthOfBricks / numberOfBrickRows);
     }
 
     private void CreateBrick(Vector3 position, int brickColorIndex)
     {
         Brick tempBrick = Instantiate(brickPrefab, position, Quaternion.identity).GetComponent<Brick>();
 
-        if(brickColorIndex >=0 && brickColorIndex < brickColors.Length)
-            tempBrick.SetColor(brickColors[brickColorIndex]);
+        tempBrick.SetColor(brickColors[brickColorIndex]);
 
         tempBrick.SetScoreValue(brickColorIndex + 1);
     }

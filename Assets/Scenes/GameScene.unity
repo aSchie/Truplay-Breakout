@@ -1799,6 +1799,7 @@ MonoBehaviour:
   - {r: 0, g: 0.79607844, b: 0, a: 1}
   - {r: 0, g: 0, b: 0.92941177, a: 1}
   brickYOffset: 0.5
+  numberOfBrickRows: 5
 --- !u!4 &2115787973
 Transform:
   m_ObjectHideFlags: 0
